@@ -1,0 +1,175 @@
+import java.util.HashSet;
+
+public class BinaryTree {
+
+	private Node root; // root of binary tree
+	private HashSet<Character> addedNodes;
+	private String inOrderStr; 
+	
+	public BinaryTree(String treeAsStr) throws InvalidTreeSyntax{
+		inOrderStr = "";
+		addedNodes = new HashSet<Character>();
+		addedNodes.add('(');
+		addedNodes.add(')');
+		/*Do some cleaning of String and validation first */
+		treeAsStr = cleanString(treeAsStr);
+		
+		if(treeAsStr.length() < 3)
+			throw new InvalidTreeSyntax();
+		
+		// set root to the index in string where first node would be'A'
+		root = new Node(treeAsStr.charAt(1));
+		addedNodes.add(root.value);
+		// pass root node and everything to the right of root node in String
+		buildTree(root, treeAsStr.substring(2, treeAsStr.length()));
+	} // constructor
+	
+	
+	private Node buildTree(Node r, String treeAsStr) {
+		// base case
+		if(treeAsStr.charAt(0) == ')')
+			return r;
+		
+		// set the left child to the call to the next buildTree
+		addedNodes.add(treeAsStr.charAt(1));
+		r.left = buildTree(new Node(treeAsStr.charAt(1)), treeAsStr.substring(2, treeAsStr.length()));
+		
+		int i = 0;
+		for(Character temp : treeAsStr.toCharArray()) {
+			if(!addedNodes.contains(temp))
+				break;
+			i++;
+		}
+		
+		if(i < treeAsStr.length()-1) {
+			addedNodes.add(treeAsStr.charAt(i));
+			r.right = buildTree(new Node(treeAsStr.charAt(i)), treeAsStr.substring(i+1, treeAsStr.length()));
+		}
+			
+		return r;
+	} // buildTree
+	
+	/*
+	 * Return true if for each Node the max diff
+	 * between the height of its left subtree and right
+	 * subtree is at most 1
+	 */
+	public boolean isBalanced() {
+		return false;
+	} // isBalanced
+	
+	/*
+	 * Return true if BinarTree is full
+	 * A Tree is full if has the maximum number of nodes
+	 * for a tree of its height
+	 * 
+	 */
+	public boolean isFull() {
+		return false;
+	} // isFull
+	
+	/*
+	 * Return true if BinaryTree isProper
+	 * A tree is Proper if each Node has 0 or
+	 * 2 child Nodes
+	 */
+	public boolean isProper() {
+		return checkTreeIsProper(this.root);
+	} // isProper
+	
+	private boolean checkNodeIsProper(Node n) {
+		if(n.left == null && n.right == null ||
+				n.left != null && n.right != null)
+			return true;
+		return false;
+	} // checkIsProper
+	
+	private boolean  checkTreeIsProper(Node n) {
+		if (n == null)
+			return true;
+		
+		if(!checkTreeIsProper(n.left))
+			return false;
+		
+		if(!checkTreeIsProper(n.right))
+			return false;
+		
+		return checkNodeIsProper(n);
+	}
+	
+	/*
+	 * Return the maximum level of 
+	 * all nodes in the tree (root node is level 0)
+	 */
+	public int height() {
+		return 0;
+	} // height
+	
+	/*
+	 * Return the number of Nodes
+	 * in the BinaryTree
+	 */
+	public int amountOfNodes() {
+		return addedNodes.size() -2;
+	} // amountOfNodes
+	
+	/*
+	 * return parethesized representation
+	 * of the BinaryTree in inOrder notation
+	 */
+	public String inOrder() {
+		traverseInOrder(this.root);
+		return inOrderStr;
+	} // inOrder
+
+	public boolean isEmpty() {
+		return root == null;
+	} // isEmpty
+
+	public int getSize() {
+		return getSizeRecursive(root);
+	} // getSize
+
+	private int getSizeRecursive(Node current) {
+		return current == null ? 0 : getSizeRecursive(current.left) + 1 + getSizeRecursive(current.right);
+	} // getSizeRecursive
+
+	public void traverseInOrder(Node node) {
+		if (node != null) {
+			inOrderStr += "(";
+			traverseInOrder(node.left);
+			
+			
+			inOrderStr += node.value;
+			
+			traverseInOrder(node.right);
+			inOrderStr += ")";
+		}
+	} // traverseInOrder
+
+	private void visit(char value) {
+		System.out.print(" " + value);
+	} // visit
+	
+	/*
+	 * Gets rid of any spaces
+	 */
+	private String cleanString(String str) {
+		return str.replaceAll(" ", "").trim();
+		//return str.trim(); // remove trailing/leading spaces
+	} // cleanString
+
+	static class Node {
+		char value;
+		Node left;
+		Node right;
+
+		Node(char value) {
+			this.value = value;
+			right = null;
+			left = null;
+		} // Node class constructor
+	} // Node static inner class
+	
+	
+} // BinaryTree
